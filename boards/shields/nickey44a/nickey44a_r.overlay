@@ -8,9 +8,9 @@
 /*
  * TPS43 FPC breakout wiring:
  *   SDA = XIAO NFC1/P0.09
- *   SCL = XIAO NFC2/P0.10
- *   RDY = XIAO P1.10
- *   NRST = XIAO P0.16
+ *   SCL = XIAO P1.01
+ *   RDY = XIAO P0.15
+ *   NRST = XIAO P0.19
  */
 
 &uicr {
