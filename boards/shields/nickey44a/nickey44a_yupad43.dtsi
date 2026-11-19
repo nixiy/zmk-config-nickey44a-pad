@@ -1,0 +1,61 @@
+#include "nickey44a.dtsi"
+#include <input/processors.dtsi>
+#include <dt-bindings/pinctrl/nrf-pinctrl.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/* Reuse TPS43 wiring: SDA P0.09, SCL P1.01, RDY P0.15, NRST P0.19.
+ * yuPad43 uses active-low RDY and software reset.
+ */
+&uicr {
+    nfct-pins-as-gpios;
+};
+
+&gpio0 {
+    yupad43_reset_idle {
+        gpio-hog;
+        gpios = <19 GPIO_ACTIVE_LOW>;
+        input; /* Release MCLR via the pad's onboard pull-up. */
+    };
+};
+
+&pinctrl {
+    yupad43_i2c0_default: yupad43_i2c0_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 9)>,
+                    <NRF_PSEL(TWIM_SCL, 1, 1)>;
+        };
+    };
+    yupad43_i2c0_sleep: yupad43_i2c0_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 9)>,
+                    <NRF_PSEL(TWIM_SCL, 1, 1)>;
+            low-power-enable;
+        };
+    };
+};
+
+&i2c0 {
+    status = "okay";
+    compatible = "nordic,nrf-twim";
+    pinctrl-0 = <&yupad43_i2c0_default>;
+    pinctrl-1 = <&yupad43_i2c0_sleep>;
+    pinctrl-names = "default", "sleep";
+    clock-frequency = <I2C_BITRATE_STANDARD>;
+    #address-cells = <1>;
+    #size-cells = <0>;
+
+    yupad43: touchpad@56 {
+        compatible = "azoteq,iqs9151";
+        reg = <0x56>;
+        irq-gpios = <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+    };
+};
+
+&kscan0 {
+    col-gpios = <&xiao_d 1 GPIO_ACTIVE_HIGH>,
+                <&xiao_d 2 GPIO_ACTIVE_HIGH>,
+                <&xiao_d 3 GPIO_ACTIVE_HIGH>,
+                <&xiao_d 4 GPIO_ACTIVE_HIGH>,
+                <&xiao_d 5 GPIO_ACTIVE_HIGH>,
+                <&xiao_d 6 GPIO_ACTIVE_HIGH>;
+};

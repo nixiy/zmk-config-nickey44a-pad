@@ -1,3 +1,1 @@
-# Bundled until the standalone touch-inertia module is published and SHA-pinned.
-add_subdirectory(modules/zmk-input-processor-touch-inertia)
-add_subdirectory(modules/zmk-input-processor-touch-swipe)
+# The yuPad43 configuration uses only upstream input processors.
