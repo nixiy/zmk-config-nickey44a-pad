@@ -1,23 +1,10 @@
 #include "nickey44a_yupad43.dtsi"
 
 / {
-    /* Upstream always emits BTN_3..6 for three-finger swipes.
-     * Map these to an ignored key, preserving event sync.
-     */
-    yupad43_ignore_swipes: yupad43_ignore_swipes {
-        compatible = "zmk,input-processor-code-mapper";
-        #input-processor-cells = <0>;
-        type = <INPUT_EV_KEY>;
-        map = <INPUT_BTN_3 0
-               INPUT_BTN_4 0
-               INPUT_BTN_5 0
-               INPUT_BTN_6 0>;
-    };
-
     yupad43_listener: yupad43_listener {
         compatible = "zmk,input-listener";
         device = <&yupad43>;
-        input-processors = <&yupad43_ignore_swipes>, <&zip_scroll_scaler 1 4>;
+        input-processors = <&zip_scroll_scaler 1 12>;
     };
 };
 

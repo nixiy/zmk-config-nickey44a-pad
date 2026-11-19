@@ -40,14 +40,12 @@ def main():
                      "ZMK_SLEEP", "ZMK_BATTERY_REPORTING",
                      "INPUT_IQS9151_1F_TAP_ENABLE", "INPUT_IQS9151_2F_TAP_ENABLE"):
             assert cfg.get("CONFIG_" + name) == "y", (side, name)
-        for name in ("INPUT_TPS43", "INPUT_IQS9151_1F_PRESSHOLD_ENABLE",
-                     "INPUT_IQS9151_2F_PRESSHOLD_ENABLE", "INPUT_IQS9151_3F_TAP_ENABLE",
-                     "INPUT_IQS9151_3F_PRESSHOLD_ENABLE", "INPUT_IQS9151_2F_PINCH_ENABLE",
-                     "INPUT_IQS9151_CURSOR_INERTIA_ENABLE", "INPUT_IQS9151_SCROLL_INERTIA_ENABLE",
-                     "ZMK_INPUT_PROCESSOR_DYNAMIC_SCALER"):
+        for name in ("INPUT_TPS43", "INPUT_IQS9151_CURSOR_INERTIA_ENABLE",
+                     "INPUT_IQS9151_SCROLL_INERTIA_ENABLE"):
             assert cfg.get("CONFIG_" + name) != "y", (side, name)
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_X"] == "1300"
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_Y"] == "1192"
+        assert cfg["CONFIG_INPUT_IQS9151_ROTATE_90"] == "y"
         assert (cfg.get("CONFIG_ZMK_SPLIT_ROLE_CENTRAL") == "y") == (side == "right")
         if side == "right":
             for name in ("ZMK_STUDIO", "ZMK_INPUT_LISTENER", "ZMK_POINTING_SMOOTH_SCROLLING",
@@ -60,8 +58,7 @@ def main():
         gpio0 = dt.label2node["gpio0"].props["phandle"].to_num()
         assert cells(pad.props["irq-gpios"]) == [gpio0, 15, 17]
         assert "rst-gpios" not in pad.props
-        reset = dt.label2node["gpio0"].nodes["yupad43_reset_idle"]
-        assert reset.props["gpios"].to_nums() == [19, 1] and "input" in reset.props
+        assert "yupad43_reset_idle" not in dt.label2node["gpio0"].nodes
         for state in ("default", "sleep"):
             group = dt.label2node["yupad43_i2c0_" + state].nodes["group1"]
             assert [v & 0x1ff for v in group.props["psels"].to_nums()] == [9, 33]
@@ -88,16 +85,13 @@ def main():
                  "zmk,input-listener" in n.props["compatible"].to_strings() and
                  n.props["device"].to_node() is right.label2node["yupad43"]]
     assert listeners == [right.label2node["yupad43_listener"]]
-    mapper = right.label2node["yupad43_ignore_swipes"]
-    assert mapper.props["type"].to_num() == 1  # INPUT_EV_KEY
-    assert mapper.props["map"].to_nums() == [0x103, 0, 0x104, 0, 0x105, 0, 0x106, 0]
+    assert "yupad43_ignore_swipes" not in right.label2node
     for label, device in (("yupad43_listener", right.label2node["yupad43"]),):
         listener = right.label2node[label]
         assert listener.props["device"].to_node() is device
         assert cells(listener.props["input-processors"]) == [
-            mapper.props["phandle"].to_num(),
-            right.label2node["zip_scroll_scaler"].props["phandle"].to_num(), 1, 4]
-    print("PASS: yuPad43 pins, active-low RDY, reset idle, address and firmware outputs")
+            right.label2node["zip_scroll_scaler"].props["phandle"].to_num(), 1, 12]
+    print("PASS: yuPad43 pins, active-low RDY, address, rotation and firmware outputs")
     print("PASS: right-only pad, single listener, basic input, battery/sleep/Studio")
     print("Hardware direction, calibration, BLE and sleep/wake checks remain manual.")
 

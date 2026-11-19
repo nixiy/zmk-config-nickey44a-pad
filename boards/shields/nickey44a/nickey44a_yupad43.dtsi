@@ -1,21 +1,12 @@
 #include "nickey44a.dtsi"
 #include <input/processors.dtsi>
 #include <dt-bindings/pinctrl/nrf-pinctrl.h>
-#include <zephyr/dt-bindings/input/input-event-codes.h>
 
 /* Reuse TPS43 wiring: SDA P0.09, SCL P1.01, RDY P0.15, NRST P0.19.
  * yuPad43 uses active-low RDY and software reset.
  */
 &uicr {
     nfct-pins-as-gpios;
-};
-
-&gpio0 {
-    yupad43_reset_idle {
-        gpio-hog;
-        gpios = <19 GPIO_ACTIVE_LOW>;
-        input; /* Release MCLR via the pad's onboard pull-up. */
-    };
 };
 
 &pinctrl {
