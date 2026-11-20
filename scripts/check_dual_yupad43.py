@@ -36,7 +36,7 @@ def main():
             assert (build / "zephyr/zmk.uf2").is_file(), side
             continue
         for name in ("INPUT_IQS9151", "GPIO", "I2C", "INPUT", "ZMK_POINTING",
-                     "ZMK_SPLIT",
+                     "ZMK_SPLIT", "NFCT_PINS_AS_GPIOS",
                      "ZMK_SLEEP", "ZMK_BATTERY_REPORTING",
                      "INPUT_IQS9151_1F_TAP_ENABLE", "INPUT_IQS9151_2F_TAP_ENABLE"):
             assert cfg.get("CONFIG_" + name) == "y", (side, name)
@@ -46,6 +46,7 @@ def main():
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_X"] == "1300"
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_Y"] == "1192"
         assert cfg["CONFIG_INPUT_IQS9151_ROTATE_90"] == "y"
+        assert cfg.get("CONFIG_USB_DEVICE_INITIALIZE_AT_BOOT") != "y"
         assert (cfg.get("CONFIG_ZMK_SPLIT_ROLE_CENTRAL") == "y") == (side == "right")
         if side == "right":
             for name in ("ZMK_STUDIO", "ZMK_INPUT_LISTENER", "ZMK_POINTING_SMOOTH_SCROLLING",
@@ -69,6 +70,15 @@ def main():
                    for p in ancestors(node)):
                 continue
             for prop in node.props.values():
+                if re.fullmatch(r"pinctrl-\d+", prop.name):
+                    for handle in cells(prop):
+                        setting = dt.phandle2node[handle]
+                        for group in setting.nodes.values():
+                            if "psels" not in group.props:
+                                continue
+                            for psel in group.props["psels"].to_nums():
+                                if psel & 0x1ff in (9, 33, 15, 19):
+                                    assert node is pad.parent and psel & 0x1ff in (9, 33), node.path
                 if prop.name.endswith("-gpios"):
                     values = cells(prop)
                     for index in range(0, len(values), 3):
