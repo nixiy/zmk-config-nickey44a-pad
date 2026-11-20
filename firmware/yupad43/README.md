@@ -15,3 +15,8 @@ yuPad43ドライバー: `5dfa6d3c480ebb5162f5425fa367823d73ddb13e`
 
 初回の左右パッド版は`initial-dual/`に保管。
 配線と設定は[右側yuPad43](../../docs/dual-yupad43.md)を参照。
+
+再確認でNickey44A用Kconfigの左右分割・右central・NFC GPIO設定を復元。
+右のUSB初期化設定も実際のshield条件へ適用。左右の通常ビルドと生成設定検証はPASS。
+この組み合わせでは左右両方のUF2を更新する。実機の指判定・カーソル動作は未確認。
+詳細と監査前状態への戻し方は上記の設定文書を参照。

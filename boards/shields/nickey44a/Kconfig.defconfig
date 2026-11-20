@@ -1,11 +1,33 @@
-if SHIELD_YUPAD43_TEST
+if SHIELD_NICKEY44A_R
 
 config ZMK_KEYBOARD_NAME
-    default "yuPad43 ZMK"
+    default "Nickey44A-PAD"
+
+config ZMK_BLE
+    default y
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
 
 # XIAO defaults this to y even without CDC, where .conf cannot override it.
 # Let ZMK register its USB connection-state callback when enabling USB.
 config USB_DEVICE_INITIALIZE_AT_BOOT
     default n
+
+endif
+
+if SHIELD_NICKEY44A_R || SHIELD_NICKEY44A_L
+
+config NFCT_PINS_AS_GPIOS
+    default y
+
+config ZMK_SPLIT
+    default y
+
+config RGBLED_WIDGET_BATTERY_LEVEL_HIGH
+    default 30
+
+config RGBLED_WIDGET_BATTERY_LEVEL_CRITICAL
+    default 10
 
 endif

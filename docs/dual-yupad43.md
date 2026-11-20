@@ -60,3 +60,73 @@ python scripts/check_dual_yupad43.py `
 カバーを固定して触れずに起動し、カーソル・タップ・スクロールを再確認する。
 通常更新でペアリング情報の消去は不要。
 初回の左右パッド版UF2は`firmware/yupad43/initial-dual/`へ保存してある。
+
+## 接続図・競合確認・今回の再確認
+
+```text
+yuPad43（部品面から見た基板端子）       Nickey44A 右XIAO
+  1 RDY  --------------------------> P0.15（入力・Active Low）
+  2 RST  --------------------------- P0.19（駆動せず、パッド上でpull-up）
+  3 GND  --------------------------- GND
+  4 3V3  <-------------------------- 3.3 V
+  5 SCL  <-------------------------- P1.01
+  6 SDA  <-------------------------> P0.09（NFC無効）
+
+右PAD → 右MCU I²C → yupad43_listener → ZMK HID → USB / BLE
+左キーボード → BLE split → 右central → ZMK HID → USB / BLE
+```
+
+ホスト側FPC端子番号・接点面・ケーブルの表裏は、回路図がこのリポジトリにないため
+未確認。ここでは既存TPS43のGPIO設定とユーザーから確認済みの同一配線を根拠にする。
+基板リビジョン・カバーの材質と厚さ・スクロール方向の実測も未確認。
+
+生成Devicetreeで、PADのGPIOと有効なpinctrl参照を確認する。
+キーマトリクスはD1〜D10（P0.03/28/29/04/05、P1.11〜15）、
+LEDはP0.26/30/06、既存UART0のP1.11/12は無効。
+PADのP0.09/P1.01/P0.15/P0.19とは重複しない。
+PADは右centralへ直結するため、パッド用input-splitは不要。
+
+### 対象ファイル
+
+| ファイル | 役割 |
+|---|---|
+| `config/west.yml` | 公式基準のyuPad43ドライバーを追加・固定 |
+| `boards/shields/nickey44a/nickey44a_yupad43.dtsi` | 既存配線に合うI²C・GPIO・センサーノード |
+| `boards/shields/nickey44a/nickey44a_r.overlay` | PADのlistenerを1つ登録・公式scroll scaler |
+| `config/nickey44a_r.conf` | 公式例の基本設定・90度回転 |
+| `boards/shields/nickey44a/Kconfig.defconfig` | Nickey44Aの左右分割・右central・NFC GPIO・USB初期化 |
+
+今回、`Kconfig.defconfig`が公式テスト用の`SHIELD_YUPAD43_TEST`に置き換わっていたため、
+`SHIELD_NICKEY44A_R/L`の条件とsplit設定を復元した。
+右側の`USB_DEVICE_INITIALIZE_AT_BOOT=n`は、実際の右shield条件内へ移した。
+ZMKとドライバーのrevision、PADの感度・ジェスチャ個別設定は変更しない。
+
+### 保存と戻し方
+
+再確認前のtrackedファイルはコミット
+`9a8619c48d6d15f38a8449a0ae4eb6479af399b0`に保存されている。
+さらに`%TEMP%/nickey-yupad43-before-review.zip`へgit archiveで保存した。
+これは監査前の状態であり、実機で正常と確認された版ではない。
+
+今回のKconfig修正だけ戻す場合:
+
+```powershell
+git restore --source=9a8619c48d6d15f38a8449a0ae4eb6479af399b0 -- boards/shields/nickey44a/Kconfig.defconfig
+```
+
+この戻し方はテスト用shield条件に戻すため、比較用に限る。
+FWの比較用コピーは`%TEMP%/nickey-yupad43-before-review-fw/`に保存。
+通常のUF2書き込みでアプリだけ入れ替え、settings_resetやブートローダー消去は行わない。
+
+### 実機確認の状態
+
+これまでにユーザーから、動作はするが指本数の誤判定とカーソル停止が報告されている。
+Arduino診断スケッチは起動メッセージまで確認済み。初期化・校正・指データのログは未取得。
+再起動後・端部・無接触時・スクロール方向/速度・キーとの同時使用・USB/BLE再接続は、
+今回の設定について実機確認が必要。ビルド成功を動作改善の確認として扱わない。
+
+今回の結果: 左右の通常ビルド成功。右central・左peripheral・NFC GPIO・Studio・
+バッテリー・sleep・PADのアドレス/回転/1つのlistenerとGPIO/pinctrl競合の検証はPASS。
+UF2は`firmware/yupad43/nickey44a_l.uf2`と`nickey44a_r.uf2`へ更新。
+非推奨設定と既存ZMKのcombo配列境界等の警告あり。実機への書き込みは未実施。
+ローカルの実行ログは`%TEMP%/nickey-yupad43-build.log`。
