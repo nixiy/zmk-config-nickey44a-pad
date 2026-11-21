@@ -18,11 +18,11 @@
 端子番号は部品面を見てケーブル出口を下にしたyuPad43側の番号。
 I²Cは100 kHz、アドレス0x56。ドライバーはソフトリセットを使用する。
 
-## 公式例から残した設定
+## 現在の設定
 
 - I²C、input、IQS9151、pointing、smooth scrollingを有効化。
-- 解像度1300×1192、カーソルとスクロールの慣性は無効。
-- listenerは右PADに1つ。scroll scalerは公式例と同じ1/12。
+- 解像度1300×1192、カーソル慣性は無効、スクロール慣性は有効。
+- listenerは右PADに1つ。scroll scalerはNixプロファイルの1/16。
 - 取り付け方向に合わせて90度回転。
 
 タップ・ホールド・ピンチ等の個別上書き、3本指スワイプ抑止processor、
@@ -34,7 +34,12 @@ I²Cは100 kHz、アドレス0x56。ドライバーはソフトリセットを�
 
 ZMK: `3931facea7507151a53f209ca4f8a717fa6bd400`
 
-yuPad43ドライバー: `5dfa6d3c480ebb5162f5425fa367823d73ddb13e`（公式例の固定版）
+yuPad43ドライバー: `58e590adbe448924ac104747ee6366d79f16d04c`（Nixプロファイル指定版）
+
+[nix.patch](https://github.com/yuchamichami/yupad43-nickey44a/blob/main/profiles/nix.patch)
+の4ファイル分の変更を取り込み済み。スクロール倍率は従来の1/12から1/16
+（出力量75%）へ変更し、スクロール慣性を有効化。追加済みのNFC・USB初期化・
+GPIO/pinctrl競合チェックは維持する。新しい左右別ジェスチャは追加していない。
 
 `config/west.yml`で依存を取得し、`build.yaml`の通常構成でビルドする。
 右側の例（west環境内で実行）:

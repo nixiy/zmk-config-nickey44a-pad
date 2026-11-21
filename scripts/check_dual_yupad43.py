@@ -38,10 +38,10 @@ def main():
         for name in ("INPUT_IQS9151", "GPIO", "I2C", "INPUT", "ZMK_POINTING",
                      "ZMK_SPLIT", "NFCT_PINS_AS_GPIOS",
                      "ZMK_SLEEP", "ZMK_BATTERY_REPORTING",
-                     "INPUT_IQS9151_1F_TAP_ENABLE", "INPUT_IQS9151_2F_TAP_ENABLE"):
-            assert cfg.get("CONFIG_" + name) == "y", (side, name)
-        for name in ("INPUT_TPS43", "INPUT_IQS9151_CURSOR_INERTIA_ENABLE",
+                     "INPUT_IQS9151_1F_TAP_ENABLE", "INPUT_IQS9151_2F_TAP_ENABLE",
                      "INPUT_IQS9151_SCROLL_INERTIA_ENABLE"):
+            assert cfg.get("CONFIG_" + name) == "y", (side, name)
+        for name in ("INPUT_TPS43", "INPUT_IQS9151_CURSOR_INERTIA_ENABLE"):
             assert cfg.get("CONFIG_" + name) != "y", (side, name)
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_X"] == "1300"
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_Y"] == "1192"
@@ -100,7 +100,7 @@ def main():
         listener = right.label2node[label]
         assert listener.props["device"].to_node() is device
         assert cells(listener.props["input-processors"]) == [
-            right.label2node["zip_scroll_scaler"].props["phandle"].to_num(), 1, 12]
+            right.label2node["zip_scroll_scaler"].props["phandle"].to_num(), 1, 16]
     print("PASS: yuPad43 pins, active-low RDY, address, rotation and firmware outputs")
     print("PASS: right-only pad, single listener, basic input, battery/sleep/Studio")
     print("Hardware direction, calibration, BLE and sleep/wake checks remain manual.")
