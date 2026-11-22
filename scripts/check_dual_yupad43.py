@@ -55,6 +55,7 @@ def main():
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_Y"] == "1192"
         assert cfg["CONFIG_INPUT_IQS9151_ROTATE_90"] == "y"
         assert cfg["CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SWIPE_THRESHOLD"] == "200"
+        assert int(cfg["CONFIG_INPUT_THREAD_STACK_SIZE"]) >= 2048
         assert cfg.get("CONFIG_USB_DEVICE_INITIALIZE_AT_BOOT") != "y"
         assert (cfg.get("CONFIG_ZMK_SPLIT_ROLE_CENTRAL") == "y") == (side == "right")
         if side == "right":
