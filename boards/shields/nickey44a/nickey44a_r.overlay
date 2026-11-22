@@ -1,10 +1,22 @@
 #include "nickey44a_yupad43.dtsi"
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <dt-bindings/input/iqs9151.h>
 
 / {
+    yupad43_swipe_actions: yupad43_swipe_actions {
+        compatible = "zmk,input-processor-behaviors-consume";
+        #input-processor-cells = <0>;
+        type = <INPUT_EV_KEY>;
+        codes = <IQS9151_GESTURE_2F_SWIPE_LEFT IQS9151_GESTURE_2F_SWIPE_RIGHT>;
+        bindings = <&kp C_AC_BACK>, <&kp C_AC_FORWARD>;
+    };
+
     yupad43_listener: yupad43_listener {
         compatible = "zmk,input-listener";
         device = <&yupad43>;
-        input-processors = <&zip_scroll_scaler 1 16>;
+        input-processors = <&yupad43_swipe_actions>, <&zip_scroll_scaler 1 16>;
     };
 };
 

@@ -22,24 +22,29 @@ I²Cは100 kHz、アドレス0x56。ドライバーはソフトリセットを�
 
 - I²C、input、IQS9151、pointing、smooth scrollingを有効化。
 - 解像度1300×1192、カーソル慣性は無効、スクロール慣性は有効。
-- listenerは右PADに1つ。scroll scalerはNixプロファイルの1/16。
+- listenerは右PADに1つ。ジェスチャ割り当てprocessorの後に、Nixプロファイルのscroll scaler（1/16）を適用。
+- 横操作はSWIPEモード。2本指の左スワイプで戻る、右スワイプで進む（判定距離200）。横スクロールは出力しない。
+- 1〜3本指のタップドラッグは無効。タップによるクリックは有効。
 - 取り付け方向に合わせて90度回転。
 
-タップ・ホールド・ピンチ等の個別上書き、3本指スワイプ抑止processor、
-追加のスクロール3倍調整、RST GPIO hog、診断用confを削除した。
-ジェスチャの動作は公式ドライバーの既定値に従う。
+横操作はドライバーの排他モードで選択し、アクションは右overlayの
+`yupad43_swipe_actions`で専用イベントに割り当てる。`codes`と`bindings`は順番に対応する。
+横スクロールへ戻す場合は、右confの`CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SWIPE=y`を
+`CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SCROLL=y`へ置き換えて再ビルドする。
+3本指スワイプは専用イベントとして検出されるが、このFWでは操作を割り当てていない。
+追加のスクロール3倍調整、RST GPIO hog、診断用confは使用しない。
 公式例のUSB専用設定・BLE無効化・Studioと競合するserial無効化は移植しない。
 
 ## ビルドと検証
 
 ZMK: `3931facea7507151a53f209ca4f8a717fa6bd400`
 
-yuPad43ドライバー: `58e590adbe448924ac104747ee6366d79f16d04c`（Nixプロファイル指定版）
+yuPad43ドライバー: `9a8b7b8639136989bdf49bdb715d8330cd31041d`（排他的な横操作モード・専用スワイプイベント対応版）
 
 [nix.patch](https://github.com/yuchamichami/yupad43-nickey44a/blob/main/profiles/nix.patch)
 の4ファイル分の変更を取り込み済み。スクロール倍率は従来の1/12から1/16
 （出力量75%）へ変更し、スクロール慣性を有効化。追加済みのNFC・USB初期化・
-GPIO/pinctrl競合チェックは維持する。新しい左右別ジェスチャは追加していない。
+GPIO/pinctrl競合チェックは維持する。左右スワイプのモードと割り当ても生成設定から検証する。
 
 `config/west.yml`で依存を取得し、`build.yaml`の通常構成でビルドする。
 右側の例（west環境内で実行）:
@@ -66,7 +71,7 @@ python scripts/check_dual_yupad43.py `
 通常更新でペアリング情報の消去は不要。
 初回の左右パッド版UF2は`firmware/yupad43/initial-dual/`へ保存してある。
 
-## 接続図・競合確認・今回の再確認
+## 接続図・競合確認・以前の再確認記録
 
 ```text
 yuPad43（部品面から見た基板端子）       Nickey44A 右XIAO
@@ -135,3 +140,12 @@ Arduino診断スケッチは起動メッセージまで確認済み。初期化�
 UF2は`firmware/yupad43/nickey44a_l.uf2`と`nickey44a_r.uf2`へ更新。
 非推奨設定と既存ZMKのcombo配列境界等の警告あり。実機への書き込みは未実施。
 ローカルの実行ログは`%TEMP%/nickey-yupad43-build.log`。
+
+## 2026-11-22: 左右スワイプ対応の検証結果
+
+左右通常構成（右Studio有効）のビルド成功。生成DevicetreeとKconfigで、
+SWIPEのみ有効、2本指の左＝戻る/右＝進む、縦スクロールと慣性有効、
+1〜3本指のタップドラッグ無効を検証した。既存のピン競合・左右の役割・Studio等もPASS。
+`firmware/yupad43/nickey44a_l.uf2`と`nickey44a_r.uf2`へ反映済み。
+非推奨設定、既存ZMKのcombo配列境界、未使用behavior等の警告あり。
+実機への書き込み・スワイプ方向・USB/BLEでの操作確認は未実施。

@@ -39,13 +39,22 @@ def main():
                      "ZMK_SPLIT", "NFCT_PINS_AS_GPIOS",
                      "ZMK_SLEEP", "ZMK_BATTERY_REPORTING",
                      "INPUT_IQS9151_1F_TAP_ENABLE", "INPUT_IQS9151_2F_TAP_ENABLE",
-                     "INPUT_IQS9151_SCROLL_INERTIA_ENABLE"):
+                     "INPUT_IQS9151_SCROLL_INERTIA_ENABLE",
+                     "INPUT_IQS9151_SCROLL_Y_ENABLE",
+                     "INPUT_IQS9151_2F_HORIZONTAL_SWIPE",
+                     "ZMK_INPUT_PROCESSOR_BEHAVIORS_CONSUME"):
             assert cfg.get("CONFIG_" + name) == "y", (side, name)
-        for name in ("INPUT_TPS43", "INPUT_IQS9151_CURSOR_INERTIA_ENABLE"):
+        for name in ("INPUT_TPS43", "INPUT_IQS9151_CURSOR_INERTIA_ENABLE",
+                     "INPUT_IQS9151_2F_HORIZONTAL_SCROLL",
+                     "INPUT_IQS9151_2F_HORIZONTAL_DISABLED",
+                     "INPUT_IQS9151_1F_PRESSHOLD_ENABLE",
+                     "INPUT_IQS9151_2F_PRESSHOLD_ENABLE",
+                     "INPUT_IQS9151_3F_PRESSHOLD_ENABLE"):
             assert cfg.get("CONFIG_" + name) != "y", (side, name)
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_X"] == "1300"
         assert cfg["CONFIG_INPUT_IQS9151_RESOLUTION_Y"] == "1192"
         assert cfg["CONFIG_INPUT_IQS9151_ROTATE_90"] == "y"
+        assert cfg["CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SWIPE_THRESHOLD"] == "200"
         assert cfg.get("CONFIG_USB_DEVICE_INITIALIZE_AT_BOOT") != "y"
         assert (cfg.get("CONFIG_ZMK_SPLIT_ROLE_CENTRAL") == "y") == (side == "right")
         if side == "right":
@@ -100,9 +109,18 @@ def main():
         listener = right.label2node[label]
         assert listener.props["device"].to_node() is device
         assert cells(listener.props["input-processors"]) == [
+            right.label2node["yupad43_swipe_actions"].props["phandle"].to_num(),
             right.label2node["zip_scroll_scaler"].props["phandle"].to_num(), 1, 16]
+    actions = right.label2node["yupad43_swipe_actions"]
+    assert actions.props["compatible"].to_string() == "zmk,input-processor-behaviors-consume"
+    assert actions.props["#input-processor-cells"].to_num() == 0
+    assert actions.props["type"].to_num() == 1  # INPUT_EV_KEY
+    assert actions.props["codes"].to_nums() == [0x7e00, 0x7e01]
+    kp = right.label2node["kp"].props["phandle"].to_num()
+    assert cells(actions.props["bindings"]) == [kp, 0x0c0224, kp, 0x0c0225]
     print("PASS: yuPad43 pins, active-low RDY, address, rotation and firmware outputs")
     print("PASS: right-only pad, single listener, basic input, battery/sleep/Studio")
+    print("PASS: exclusive horizontal swipe mode, Back/Forward bindings, vertical scroll, tap-drag off")
     print("Hardware direction, calibration, BLE and sleep/wake checks remain manual.")
 
 

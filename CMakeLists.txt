@@ -1,1 +1,1 @@
-# The yuPad43 configuration uses only upstream input processors.
+# Input processors are provided by ZMK and the pinned yuPad43 driver module.
