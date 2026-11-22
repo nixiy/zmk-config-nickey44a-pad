@@ -117,7 +117,7 @@ def main():
     assert actions.props["type"].to_num() == 1  # INPUT_EV_KEY
     assert actions.props["codes"].to_nums() == [0x7e00, 0x7e01]
     kp = right.label2node["kp"].props["phandle"].to_num()
-    assert cells(actions.props["bindings"]) == [kp, 0x0c0224, kp, 0x0c0225]
+    assert cells(actions.props["bindings"]) == [kp, 0x0c0225, kp, 0x0c0224]
     print("PASS: yuPad43 pins, active-low RDY, address, rotation and firmware outputs")
     print("PASS: right-only pad, single listener, basic input, battery/sleep/Studio")
     print("PASS: exclusive horizontal swipe mode, Back/Forward bindings, vertical scroll, tap-drag off")

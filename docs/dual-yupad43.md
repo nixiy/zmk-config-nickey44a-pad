@@ -29,6 +29,8 @@ I²Cは100 kHz、アドレス0x56。ドライバーはソフトリセットを�
 
 横操作はドライバーの排他モードで選択し、アクションは右overlayの
 `yupad43_swipe_actions`で専用イベントに割り当てる。`codes`と`bindings`は順番に対応する。
+実機で方向が逆との報告に合わせ、ドライバーの`2F_SWIPE_LEFT`には進む、
+`2F_SWIPE_RIGHT`には戻るを割り当てている。物理的な左右操作は実機で再確認する。
 横スクロールへ戻す場合は、右confの`CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SWIPE=y`を
 `CONFIG_INPUT_IQS9151_2F_HORIZONTAL_SCROLL=y`へ置き換えて再ビルドする。
 3本指スワイプは専用イベントとして検出されるが、このFWでは操作を割り当てていない。

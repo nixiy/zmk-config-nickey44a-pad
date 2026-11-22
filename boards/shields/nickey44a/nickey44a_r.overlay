@@ -10,7 +10,8 @@
         #input-processor-cells = <0>;
         type = <INPUT_EV_KEY>;
         codes = <IQS9151_GESTURE_2F_SWIPE_LEFT IQS9151_GESTURE_2F_SWIPE_RIGHT>;
-        bindings = <&kp C_AC_BACK>, <&kp C_AC_FORWARD>;
+        /* Match the installed pad orientation reported on hardware. */
+        bindings = <&kp C_AC_FORWARD>, <&kp C_AC_BACK>;
     };
 
     yupad43_listener: yupad43_listener {
