@@ -32,6 +32,7 @@ def main():
             assert cfg.get("CONFIG_ZMK_BATTERY_REPORTING") == "y"
             assert cfg.get("CONFIG_ZMK_SLEEP") == "y"
             assert "yupad43" not in dt.label2node
+            assert dt.label2node["scroll_inertia"].props["status"].to_string() == "disabled"
             assert "left_yupad43_split" not in dt.label2node
             assert (build / "zephyr/zmk.uf2").is_file(), side
             continue
@@ -64,6 +65,10 @@ def main():
                          "ZMK_SPLIT_BLE_CENTRAL_BATTERY_LEVEL_FETCHING"):
                 assert cfg.get("CONFIG_" + name) == "y", name
         pad = dt.label2node["yupad43"]
+        inertia = dt.label2node["scroll_inertia"]
+        assert inertia.props["status"].to_string() == "okay"
+        assert inertia.props["device"].to_node() == pad
+        assert inertia.props["#binding-cells"].to_num() == 0
         assert pad.props["compatible"].to_string() == "azoteq,iqs9151"
         assert pad.props["reg"].to_nums() == [0x56]
         gpio0 = dt.label2node["gpio0"].props["phandle"].to_num()
@@ -122,6 +127,7 @@ def main():
     print("PASS: yuPad43 pins, active-low RDY, address, rotation and firmware outputs")
     print("PASS: right-only pad, single listener, basic input, battery/sleep/Studio")
     print("PASS: exclusive horizontal swipe mode, Back/Forward bindings, vertical scroll, tap-drag off")
+    print("PASS: scroll inertia behavior enabled only on central and targets its IQS9151")
     print("Hardware direction, calibration, BLE and sleep/wake checks remain manual.")
 
 

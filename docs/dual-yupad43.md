@@ -41,7 +41,9 @@ I²Cは100 kHz、アドレス0x56。ドライバーはソフトリセットを�
 
 ZMK: `3931facea7507151a53f209ca4f8a717fa6bd400`
 
-yuPad43ドライバー: `9a8b7b8639136989bdf49bdb715d8330cd31041d`（排他的な横操作モード・専用スワイプイベント対応版）
+yuPad43ドライバー: `1c4a52376e8169a5b59ace6e128b177ad46c6073`（慣性スクロールの実行時切り替えAPI対応版）
+
+慣性切り替えbehaviorの割り当て・再試行仕様は[こちら](runtime-scroll-inertia.md)。
 
 [nix.patch](https://github.com/yuchamichami/yupad43-nickey44a/blob/main/profiles/nix.patch)
 の4ファイル分の変更を取り込み済み。スクロール倍率は従来の1/12から1/16

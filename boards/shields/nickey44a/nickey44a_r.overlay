@@ -4,6 +4,11 @@
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <dt-bindings/input/iqs9151.h>
 
+&scroll_inertia {
+    status = "okay";
+    device = <&yupad43>;
+};
+
 / {
     yupad43_swipe_actions: yupad43_swipe_actions {
         compatible = "zmk,input-processor-behaviors-consume";

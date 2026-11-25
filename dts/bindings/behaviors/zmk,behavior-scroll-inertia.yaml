@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+description: Toggle IQS9151 scroll inertia on the central using deferred requests
+compatible: "zmk,behavior-scroll-inertia"
+include: zero_param.yaml
+properties:
+  device:
+    type: phandle
+    required: true
+    description: IQS9151 device attached to the central

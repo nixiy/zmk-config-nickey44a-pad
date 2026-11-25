@@ -16,6 +16,6 @@ manifest:
       revision: 8756cb7b8114069fa3c25c6f6c990f24988fceff # v0.3
     - name: zmk-driver-yupad43
       url: https://github.com/nixiy/zmk-driver-yupad43
-      revision: 9a8b7b8639136989bdf49bdb715d8330cd31041d
+      revision: 1c4a52376e8169a5b59ace6e128b177ad46c6073
   self:
     path: config

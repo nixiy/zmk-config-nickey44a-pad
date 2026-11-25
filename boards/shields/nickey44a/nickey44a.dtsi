@@ -2,6 +2,14 @@
 #include <physical_layouts.dtsi>
 
 / {
+    behaviors {
+        scroll_inertia: scroll_inertia {
+            compatible = "zmk,behavior-scroll-inertia";
+            #binding-cells = <0>;
+            status = "disabled";
+        };
+    };
+
     chosen {
         zmk,physical-layout = &physical_layout0;
         zmk,battery = &vbatt;

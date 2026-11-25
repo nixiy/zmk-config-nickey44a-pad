@@ -1,1 +1,1 @@
-# Input processors are provided by ZMK and the pinned yuPad43 driver module.
+target_sources(app PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/behavior_scroll_inertia.c)
